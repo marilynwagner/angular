@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--pluralsight.com course: Deborah Kurata AngularJS Line of Business Applications -->
+<!-- 1-Intro: 1) Key factors in building line of business application - DATA IS CRITICAL ASSET (LOTS of data need to filter/display; lots data fields; data integrity significant; need data visualization)   -->
+<!-- 1-Intro: 1) cont'd need techniques for saving partially completed data (in case you enter data, then open another browser, don't want to lose data you entered  -->
+<!-- 1-Intro: 2) Steps to build Angular line of business application: 1-Business requirements(application features, design considerations, architecture 2-Layout and Navigation (page layout(view), style(bootstrap), navigation(routing) 3-Data Access (retrieving data, saving data) 4-Data Entry Forms (form layout, validation, submittal) 5-Business Logic (Services which you can use and reuse in application 6-Data Visualization or Analytics (charts) and topics that are cross-cutting over all 6 steps: Exception handling, unit testing and security -->
+<!-- 1-Intro: 3) Course Outline: 1-Building First Page 2-Accessing Data 3-Routing to Multiple pages 4-Building Data Entry forms 5-Performing Validation 6-Defining Business Logic in Service 7-Visualizing Data with Charts 8-Exception Handling 9-Unit Testing,Security-->
+<!-- 2-Building First Page: 1) Objectives 1-Turn business requirements into a View, Model and Controller 2-Organize Project Structure for app 3-Build the View using directives 4-Define the Module for app 5-Build Controller 6-Define the Model 7-Implement the Methods 8-Style View with bootstrap  -->
+<!-- 2-Building First Page: 2) Define the VIEW User stories:  browse list of products, see product images, select product to view and edit product details led to a MOCKUP of "Product List View"-->
+<!-- 2-Building First Page: 3) Define the MODEL Angular app - data often defined in JSON; products here are in array (in [] ) and each product in curly braces within array; data defined as name/value pairs separated by colons - e.g. "productId":1  so create a Product Model in JSON that identifies all the key/value pairs for ONE PRODUCT-->
+<!-- 2-Building First Page: 4) Define the CONTROLLER - Product List Controller; note Controller defines MODEL (list of DATA-sometimes referred to as view model) (retrieve product data by calling backend web service) and CODE for actions in the VIEW (e.g. Hide/show Images - hiding can improve performance by not downloading all the image files  -->
+<!-- 2-Building First Page: 5) Organizing Project Structure - this course uses the "by feature" approach - directories organized around directory features; "common" directory contains code common to all parts of application; js directory is for only external js files, like angular.js; index.html contains references to js and css files and is launching point for product management application; she's using Webstorm IDE  -->
+<!-- 2-Building First Page: 6) create barebones index.html (add ng-app to body tag, angular.js script note ng-app is a directive that identifies the application as an angular app-->
+<!-- 2-Building First Page: 7) open up dev tools - Network will see browser first fetches the index.html and then retrieves and executes angular.js -->
+<!-- 2-Building First Page: 8) distinction TEMPLATE is HTML (actual code) that defines visual elements and directives VIEW is the loaded and rendered template (the generated page)- also called "live template" instructor uses VIEW in general way that refers to BOTH template and View-->
+<head>
+    <meta charset="UTF-8">
+    <title>URS Electronics</title>
+
+    <!-- Stylesheets -->
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <link href="css/app.css" rel="stylesheet"/>
+    <link href="css/toastr.css" rel="stylesheet"/>
+
+    <!--Library Scripts  -->
+    <script src="js/jquery-3.1.1.js"></script> <!--this must come before reference to angular or app will use ANGULAR's jQuery  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.js"></script><!--this must go AFTER the angular lib  -->
+    <script src="js/angular-mocks.js"></script> <!--must be added AFTER reference to main angular lib above  -->
+    <script src="js/angular-ui-router.js"></script>
+    <script src="js/mask.js"></script>
+    <script src="js/ui-bootstrap-tpls-0.11.0.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/toastr.js"></script>
+
+    <!--Application Script -->
+    <script src="app/app.js"></script>
+
+    <!--Product Controllers -->
+    <script src="app/products/productListCtrl.js"></script>
+    <script src="app/products/productDetailCtrl.js"></script>
+    <script src="app/products/productEditCtrl.js"></script>
+
+    <!--Services -->
+    <script src="app/common/services/common.services.js"></script>
+    <script src="app/common/services/productResource.js"></script>
+    <script src="app/common/services/productResourceMock.js"></script>
+    <script src="app/common/services/productService.js"></script>
+
+</head>
+
+<body ng-app = "productManagement"> <!--before set up controller can use ng-init on table tag to initialize your list of products  -- once create controller add the commented ng-init code to controller-->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <a class="navbar-brand"
+                ui-sref="home">URS Electronics</a>
+            <div class="navbar-header">
+                <button type="button"
+                    class="navbar-toggle"
+                        data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span clas="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a ui-sref="productList">Product List</a></li>
+                    <!--<li><a ui-sref="productEdit({productId:0})">  this was replaced when starte nesting-->
+                    <li><a ui-sref="productEdit.info({productId:0})">
+                    <i class="glyphicon glyphicon-plus"></i>
+                        Add Product</a></li>
+                </ul>
+
+            </div>
+        </div>
+
+    </nav>
+<!-- 2-Building First Page: 9) created table that looked like this MINUS THE ng-init code -->
+
+  <!--<table ng-init='products = [   <!-- 2-Building First Page: 12) added the ng-init code here because don't have controller yet - allows you to run code with TEST DATA-->
+                <!--{" productId": 1,
+                "productName": "Leaf Rake",
+                "productCode": "GDN-00ll",
+                "releaseDate": "March 19, 2009",
+                "description": "Leaf rake with 48-inch handle",
+                "cost": 9.00,
+                "price": 19.95,
+                "category": "garden",
+                "tags": [ "leaf", "tool" ],
+                "imageUrl": "http://openclipart.org/image/300px/svg_to_png/26215/Leaf-Rake.png"
+                },
+                {" productId": 5,
+                "productName": "Hammer",
+                "productCode": "TBX-0048",
+                "releaseDate": "May 21, 2013",
+                "description": "Curved claw steel hammer",
+                "cost": 1.00,
+                "price": 8.99,
+                "category": "toolbox",
+                "tags": [ "tool" ],
+                "imageUrl": "http://openclipart.org/image/300px/svg_to_png/73/rejon-Hammer.png"
+                }]'> -->
+        <!--<thead>
+            <tr>
+                <td>Image</td>
+                <td>Product</td>
+                <td>Code</td>
+                <td>Available</td>
+                <td>Price</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="product in products"> <!-- 2-Building First Page: 10) --> <!--ng-repeat repeats row for each product in set of products -- where are "products" defined? don't have controller yet, so can use ng-init directive - see above code  -->
+                <!--<td>
+                    <img ng-src="{{product.imageUrl}}" 2-Building First Page: 15) (NEXT go to app.js) dev tools will see error with this code: in the url "%7B%7Bproduct.imageUrl%7D%7D" %7B is left curly brace and %7D is right one because code has src attribute like this src= blah - needs to be ng-src. Why? WITHOUT ng-src app tries to load image BEFORE Angular can evaluate the binding expression - can look in dev tools - Network to see images NOW come down NEXT go to app.js
+                        style="width:50px;margin:2px"  2-Building First Page: 13) added style code
+                         title="{{product.productName}}"> 2-Building First Page: 11) each product is bound to property of model using the binding expression ( {{ }} ) can insert dynamic values into HTML - here we're referencing model properties - binding expression syntax tells Angular to replace text content of associated html element (td) with value of defined expression (value of defined product property)
+
+                </td>
+                <td>{{ product.productName }}</td>
+                <td>{{ product.productCode }}</td>
+                <td>{{ product.releaseDate }}</td>
+                <td>{{ product.price | currency }}</td> 2-Building First Page: 14) add currency filter
+            </tr>
+        </tbody>
+    </table>-->
+    <div class="container">  <!-- this is bootstrap-->
+        <div ui-view></div>
+    </div>
+</body>
+</html>
