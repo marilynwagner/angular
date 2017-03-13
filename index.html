@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--pluralsight.com course: Deborah Kurata AngularJS Line of Business Applications -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>URS Electronics</title>
+
+    <!-- Stylesheets -->
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <link href="css/app.css" rel="stylesheet"/>
+    <link href="css/toastr.css" rel="stylesheet"/>
+
+    <!--Library Scripts  -->
+    <script src="js/jquery-3.1.1.js"></script> <!--this must come before reference to angular or app will use ANGULAR's jQuery  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.js"></script><!--this must go AFTER the angular lib  -->
+    <script src="js/angular-mocks.js"></script> <!--must be added AFTER reference to main angular lib above  -->
+    <script src="js/angular-ui-router.js"></script>
+    <script src="js/mask.js"></script>
+    <script src="js/ui-bootstrap-tpls-0.11.0.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/toastr.js"></script>
+    <script src="js/d3.js"></script>
+    <script src="js/angular-charts.js"></script>
+
+    <!--Application Script -->
+    <script src="app/app.js"></script>
+
+    <!--Product Controllers -->
+    <script src="app/products/productListCtrl.js"></script>
+    <script src="app/products/productDetailCtrl.js"></script>
+    <script src="app/products/productEditCtrl.js"></script>
+
+    <!--Price Controllers -->
+   <!-- <script src="app/prices/priceAnalyticsCtrl.js"></script> removed this temporarily because angular-charts does not work-->
+
+    <!--Services -->
+    <script src="app/common/services/common.services.js"></script>
+    <script src="app/common/services/productResource.js"></script>
+    <script src="app/common/services/productResourceMock.js"></script>
+    <script src="app/common/services/productService.js"></script>
+</head>
+
+<body ng-app = "productManagement"> <!--before set up controller can use ng-init on table tag to initialize your list of products  -- once create controller add the commented ng-init code to controller-->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <a class="navbar-brand"
+                ui-sref="home">URS Electronics</a>
+            <div class="navbar-header">
+                <button type="button"
+                    class="navbar-toggle"
+                        data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span clas="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a ui-sref="productList">Product List</a></li>
+                    <!--<li><a ui-sref="productEdit({productId:0})">  this was replaced when starte nesting-->
+                    <li><a ui-sref="productEdit.info({productId:0})">
+                    <i class="glyphicon glyphicon-plus"></i>
+                        Add Product</a></li>
+                    <!--<li><a ui-sref="priceAnalytics">Price Analytics</a></li>--><!--removed this temporarily because angular-charts does not work   -->
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <div class="container">  <!-- this is bootstrap-->
+        <div ui-view></div>
+    </div>
+</body>
+</html>
